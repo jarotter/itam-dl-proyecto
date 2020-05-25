@@ -86,7 +86,7 @@ class Flickr8K:
             image_id = self._read_descriptions(dataset)
             df = pd.DataFrame({"image_id": image_id, "split": dataset})
             assignments = pd.concat((assignments, df))
-        self.df = self.df.merge(assignments, how="outer")
+        self.df = self.df.merge(assignments, how="outer").dropna()
 
     def _assign_data(self):
         for dataset in ["train", "test", "eval"]:
