@@ -1,6 +1,6 @@
 import tensorflow as tf
-from data import Flickr8K, RoBERTaTokenizedFlickr8K
-from model import WCGAN
+from .data import Flickr8K, RoBERTaTokenizedFlickr8K
+from .model import WCGAN
 
 class WCGANTrainer:
     """Configure and run training."""
@@ -30,8 +30,13 @@ class WCGANTrainer:
             ),
             tf.keras.callbacks.TensorBoard(log_dir=self.log_dir)
         ]
-        wcgan.fit(
-            [self.image_dataset, self.text_dataset], 
+        self.wcgan.compile(
+            tf.keras.optimizers.Adam(learning_rate=0.0003),
+            tf.keras.optimizers.Adam(learning_rate=0.0003),
+            self.wcgan.wasserstein_loss
+        )
+        self.wcgan.fit(
+            x=[self.images, self.texts], 
             epochs=epochs, 
             callbacks=callbacks
         )
