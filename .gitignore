@@ -1,0 +1,6 @@
+credentials.json
+data/*
+notebooks/*
+output/*
+.vscode/*
+bert/*
