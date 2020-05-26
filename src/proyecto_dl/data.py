@@ -86,7 +86,7 @@ class Flickr8K:
             image_id = self._read_descriptions(dataset)
             df = pd.DataFrame({"image_id": image_id, "split": dataset})
             assignments = pd.concat((assignments, df))
-        self.df = self.df.merge(assignments, how="outer").dropna()
+        self.df = self.df.merge(assignments, how="outer").dropna().sample(frac=1) # quedan shuffleados
 
     def _assign_data(self):
         for dataset in ["train", "test", "eval"]:
@@ -115,6 +115,7 @@ class RoBERTaTokenizedFlickr8K(Flickr8K):
 
     def _tokenize(self):
         tokenizer = RobertaTokenizer.from_pretrained(self.roberta_model_name)
+        self.vocab_size = tokenizer.vocab_size
         for split in ["train", "test", "eval"]:
             values = getattr(self, split)
             tokenized = tokenizer.batch_encode_plus(
@@ -125,7 +126,6 @@ class RoBERTaTokenizedFlickr8K(Flickr8K):
                 return_attention_masks=False,
             )
             tokenized = tf.data.Dataset.from_tensor_slices(tokenized["input_ids"])
-            tokenized = tokenized.batch(self.batch_size)
             setattr(self, split, tokenized)
 
     def save(self):
@@ -159,7 +159,6 @@ class Flickr8KImages:
             values = self.data.df[self.data.df.split == split].image_id.to_list()
             dataset = tf.data.Dataset.from_tensor_slices(values)
             dataset = dataset.map(self._process_name)
-            dataset = dataset.batch(self.batch_size)
             setattr(self, split, dataset)
 
     def _process_name(self, image_name: str):

@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "proyecto-dl"
+version = "0.1.0"
+description = "\"Text to image with VAE\""
+authors = ["Jorge Rotter <jorgearotter@gmail.com>"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+pandas = "^1.0.3"
+transformers = "^2.10.0"
+google-cloud-storage = "^1.28.1"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
