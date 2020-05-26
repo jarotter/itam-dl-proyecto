@@ -17,12 +17,13 @@ class FileDownloader:
 
     BUCKET = "tti-roberta-wcgan"
 
-    def __init__(self, bucket: str = BUCKET):
+    def __init__(self, bucket: str = BUCKET, credentials=None):
         self.bucket_id = bucket
         self._init_bucket()
+        self.credentials=credentials
 
     def _init_bucket(self):
-        client = storage.Client()
+        client = storage.Client(credentials=self.credentials)
         bucket = client.get_bucket(self.bucket_id)
         assert bucket is not None
         self.bucket = bucket
@@ -59,10 +60,10 @@ class Flickr8K:
 
     TOKENS_ID = "gs://tti-roberta-wcgan/data/text/Flickr8k.token.txt"
 
-    def __init__(self, df: pd.DataFrame = None):
+    def __init__(self, df: pd.DataFrame = None, credentials = None):
         self.file_locations = Flickr8KFileLocations()
         self.df = self._read_dataframe() if df is None else df
-        self.downloader = FileDownloader()
+        self.downloader = FileDownloader(credentials=credentials)
         self._correct_image_name()
         self._train_test_split()
         self._assign_data()
@@ -148,10 +149,11 @@ class Flickr8KImages:
         data_object: Flickr8K = None,
         desired_image_shape: Tuple[int, int] = (64, 64),
         batch_size: int = 36,
+        credentials = None
     ):
         self.image_shape = desired_image_shape
         self.batch_size = batch_size
-        self.data = Flickr8K() if data_object is None else data_object
+        self.data = Flickr8K(credentials=credentials) if data_object is None else data_object
         self._assign_data()
 
     def _assign_data(self):

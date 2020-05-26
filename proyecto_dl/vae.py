@@ -154,10 +154,11 @@ class VAETrainer:
     def __init__(
         self, 
         vae: VAE,
+        gcs_credentials: dict,
         log_dir: str = LOG_DIR, 
-        model_dir = MODEL_DIR
+        model_dir = MODEL_DIR,
     ):
-        self.images = Flickr8KImages()
+        self.images = Flickr8KImages(credentials=gcs_credentials)
         self.text = RoBERTaTokenizedFlickr8K()
         self.histories = []
         self.log_dir = log_dir
