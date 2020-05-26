@@ -3,4 +3,4 @@ data/*
 notebooks/*
 output/*
 .vscode/*
-bert/*
+docs/*
