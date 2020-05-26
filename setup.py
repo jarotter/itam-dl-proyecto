@@ -18,4 +18,9 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     python_requires='>=3.6.1',
+    install_requires=[
+        "pandas==1.0.3",
+        "transformers==2.10.0",
+        "google_cloud_storage==1.28.1"
+    ]
 )
