@@ -19,8 +19,8 @@ class FileDownloader:
 
     def __init__(self, bucket: str = BUCKET, credentials=None):
         self.bucket_id = bucket
-        self._init_bucket()
         self.credentials=credentials
+        self._init_bucket()
 
     def _init_bucket(self):
         client = storage.Client(credentials=self.credentials)
