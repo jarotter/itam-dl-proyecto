@@ -1,12 +1,11 @@
 [tool.poetry]
 name = "proyecto-dl"
 version = "0.1.0"
-description = "\"Text to image with VAE\""
+description = "\"Text to image with generative models\""
 authors = ["Jorge Rotter <jorgearotter@gmail.com>"]
-license = "MIT"
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.6.1"
 pandas = "^1.0.3"
 transformers = "^2.10.0"
 google-cloud-storage = "^1.28.1"
