@@ -2,6 +2,7 @@
 
 from typing import Tuple
 
+from functools import partial
 import numpy as np
 import tensorflow as tf
 import tensorflow.keras.backend as K
@@ -35,7 +36,7 @@ class RandomWeightedAverage(tf.keras.layers.Layer):
         self.batch_size = batch_size
 
     def call(self, inputs, **kwargs):
-        alpha = tf.random_uniform((self.batch_size, 1, 1, 1))
+        alpha = tf.random.uniform((self.batch_size, 1, 1, 1))
         return (alpha * inputs[0]) + ((1 - alpha) * inputs[1])
 
     def compute_output_shape(self, input_shape):
@@ -256,4 +257,56 @@ class WCGANBuilder:
 
         model = Model([noise_input, text_params], img)
         self._model.generator = model
+        return self
+
+
+class GANAugmenter:
+
+    def __init__(self, gan: WCGAN):
+        self.gan = gan
+
+    def build_discriminator_model(self):
+        self.gan.generator.trainable = False
+
+        # Imágenes reales
+        real_img = Input(shape=self.gan.img_shape)
+
+        # Imágenes generadas
+        noise_input = Input(shape=(self.gan.latent_dim,))
+        text_input = Input(shape=(self.gan.roberta_shape[0],))
+        fake_img = self.gan.generator([noise_input, text_input])
+
+        # Discriminador
+        fake_pred = self.gan.discriminator([fake_img, text_input])
+        real_pred = self.gan.discriminator([real_img, text_input])
+
+        # Construct weighted average between real and fake images
+        interpolated_img = RandomWeightedAverage()([real_img, fake_img])
+        # Determine validity of weighted sample
+        interpolated_pred = self.gan.discriminator([interpolated_img, text_input])
+
+        # Use Python partial to provide loss function with additional
+        # 'averaged_samples' argument
+        partial_gp_loss = partial(self.gan.gradient_penalty_loss,
+                          averaged_samples=interpolated_img)
+        partial_gp_loss.__name__ = 'gradient_penalty' # Keras requires function names
+        self.gan.partial_gp_loss = partial_gp_loss
+
+        self.gan.discriminator_model = Model(
+            inputs=[real_img, noise_input, text_input],
+            outputs=[real_pred, fake_pred, interpolated_pred]
+        )
+        return self
+
+    def build_generator_model(self):
+        self.gan.discriminator.trainable = False
+        self.gan.generator.trainable = True
+
+        # Generar imágenes
+        z_input = Input(shape=(self.gan.latent_dim))
+        text_input = Input(shape=(self.gan.roberta_shape[0],))
+        img = self.gan.generator([z_input, text_input])
+        # Predecir si es real
+        valid = self.gan.discriminator([img, text_input])
+        self.gan.generator_model = Model([z_input, text_input], valid)
         return self
