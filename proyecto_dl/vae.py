@@ -186,7 +186,7 @@ class VAETrainer:
                 update_freq="epoch"
             )
         ]
-        history = self.vae.fit(data, epochs=epochs)#, callbacks=callbacks)
+        history = self.vae.fit(data, epochs=epochs, callbacks=callbacks)
         self.histories.append(history)
         return history
 
