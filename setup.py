@@ -21,6 +21,7 @@ setuptools.setup(
     install_requires=[
         "pandas==1.0.3",
         "transformers==2.10.0",
-        "google_cloud_storage==1.28.1"
+        "google_cloud_storage==1.28.1",
+        "gcsfs>=6.2"
     ]
 )
