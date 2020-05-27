@@ -34,7 +34,7 @@ class WCGAN(Model):
         self.d_loss_fn = d_loss_fn
         self.g_loss_fn = g_loss_fn
 
-    def gradient_penalty(self, batch_size, real_images, fake_images):
+    def gradient_penalty(self, batch_size, real_images, fake_images, text):
         """ Calculates the gradient penalty.
 
         This loss is calculated on an interpolated image
@@ -48,7 +48,7 @@ class WCGAN(Model):
         with tf.GradientTape() as gp_tape:
             gp_tape.watch(interpolated)
             # 1. Get the discriminator output for this interpolated image.
-            pred = self.discriminator(interpolated, training=True)
+            pred = self.discriminator([interpolated, text], training=True)
 
         # 2. Calculate the gradients w.r.t to this interpolated image.
         grads = gp_tape.gradient(pred, [interpolated])[0]
@@ -101,7 +101,7 @@ class WCGAN(Model):
                 # Calculate discriminator loss using fake and real logits
                 d_cost = self.d_loss_fn(real_img=real_logits, fake_img=fake_logits)
                 # Calculate the gradient penalty
-                gp = self.gradient_penalty(batch_size, image, fake_images)
+                gp = self.gradient_penalty(batch_size, image, fake_images, text)
                 # Add the gradient penalty to the original discriminator loss
                 d_loss = d_cost + gp * self.gp_weight
 
@@ -291,7 +291,7 @@ class WCGANTrainer:
 
     def __init__(
         self, 
-        wcgan: WCGAN,
+        gan: WCGAN,
         log_dir: str = LOG_DIR, 
         model_dir = MODEL_DIR,
     ):
@@ -321,7 +321,7 @@ class WCGANTrainer:
                 update_freq="epoch"
             )
         ]
-        history = self.vae.fit(data, epochs=epochs, callbacks=callbacks)
+        history = self.gan.fit(data, epochs=epochs, callbacks=callbacks)
         self.histories.append(history)
         return history
 
