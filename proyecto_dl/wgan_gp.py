@@ -27,7 +27,7 @@ class WCGAN(Model):
         self.gp_weight = gp_weight
 
     def compile(self, d_optimizer, g_optimizer, d_loss_fn, g_loss_fn):
-        super(WGAN, self).compile()
+        super(WCGAN, self).compile()
         self.d_optimizer = d_optimizer
         self.g_optimizer = g_optimizer
         self.d_loss_fn = d_loss_fn

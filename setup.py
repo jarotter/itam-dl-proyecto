@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="proyecto-dl-itam-jarotter", 
-    version="0.1.5",
+    version="0.1.6",
     author="Jorge Rotter",
     author_email="jorgearotter@gmail.com.com",
     description="Text to image with generative models",
