@@ -134,7 +134,7 @@ class RoBERTaTokenizedFlickr8K(Flickr8K):
             data,
             pad_to_max_length=True,
             max_length=self.max_sentence_length,
-           values return_attention_masks=False,
+            return_attention_masks=False,
             return_tensors="tf"
         )
         tokenized = tf.data.Dataset.from_tensor_slices(tokenized["input_ids"])
