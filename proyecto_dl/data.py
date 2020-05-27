@@ -137,8 +137,7 @@ class RoBERTaTokenizedFlickr8K(Flickr8K):
             return_attention_masks=False,
             return_tensors="tf"
         )
-        tokenized = tf.data.Dataset.from_tensor_slices(tokenized["input_ids"])
-        return tokenized
+        return tokenized["input_ids"]
 
     def save(self):
         with open(self.PICKLE_LOCATION, "wb") as f:
