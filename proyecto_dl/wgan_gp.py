@@ -277,7 +277,7 @@ class WCGANBuilder:
 class WCGANTrainer:
 
     LOG_DIR = f"gs://tti-roberta-wcgan/gan-tensorboard{datetime.now()}/"
-    MODEL_DIR = f"gs://tti-roberta-wcgan/gan-checkpoints/third_train/{datetime.now()}/"
+    MODEL_DIR = f"gs://tti-roberta-wcgan/gan-checkpoints/{datetime.now()}/"
 
     @staticmethod
     def discriminator_loss(real_img, fake_img):
