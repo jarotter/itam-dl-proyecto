@@ -7,6 +7,7 @@ from tensorflow.keras import Model
 from transformers import TFRobertaModel
 import gcsfs
 from.data import Flickr8KImages, RoBERTaTokenizedFlickr8K
+from datetime import datetime
 
 class WCGAN(Model):
     """Wasserstein GAN condicional con RoBERTa."""
@@ -275,8 +276,8 @@ class WCGANBuilder:
 
 class WCGANTrainer:
 
-    LOG_DIR = "gs://tti-roberta-wcgan/gan-tensorboard"
-    MODEL_DIR = "gs://tti-roberta-wcgan/gan-checkpoints/third_train/"
+    LOG_DIR = f"gs://tti-roberta-wcgan/gan-tensorboard{datetime.now()}/"
+    MODEL_DIR = f"gs://tti-roberta-wcgan/gan-checkpoints/third_train/{datetime.now()}/"
 
     @staticmethod
     def discriminator_loss(real_img, fake_img):
