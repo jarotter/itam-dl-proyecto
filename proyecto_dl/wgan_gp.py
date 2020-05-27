@@ -6,6 +6,7 @@ from typing import Tuple
 from tensorflow.keras import Model
 from transformers import TFRobertaModel
 import gcsfs
+from.data import Flickr8KImages, RoBERTaTokenizedFlickr8K
 
 class WCGAN(Model):
     """Wasserstein GAN condicional con RoBERTa."""
@@ -93,14 +94,14 @@ class WCGAN(Model):
                 )
                 # Get the logits for real images
                 real_logits = self.discriminator(
-                    [real_images, text], 
+                    [image, text], 
                     training=True
                 )
 
                 # Calculate discriminator loss using fake and real logits
                 d_cost = self.d_loss_fn(real_img=real_logits, fake_img=fake_logits)
                 # Calculate the gradient penalty
-                gp = self.gradient_penalty(batch_size, real_images, fake_images)
+                gp = self.gradient_penalty(batch_size, image, fake_images)
                 # Add the gradient penalty to the original discriminator loss
                 d_loss = d_cost + gp * self.gp_weight
 
@@ -274,7 +275,7 @@ class WCGANBuilder:
 
 class WCGANTrainer:
 
-    LOG_DIR = "gs://tti-roberta-wcgan/tensorboard"
+    LOG_DIR = "gs://tti-roberta-wcgan/gan-tensorboard"
     MODEL_DIR = "gs://tti-roberta-wcgan/gan-checkpoints/"
 
     @staticmethod
