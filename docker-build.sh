@@ -1,1 +1,1 @@
-docker build --tag imagevae .
+docker build --no-cache --tag imagevae .
