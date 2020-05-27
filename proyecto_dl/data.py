@@ -109,16 +109,17 @@ class RoBERTaTokenizedFlickr8K(Flickr8K):
         super().__init__()
         self.batch_size = batch_size
         self.roberta_model_name = roberta_model_name
+        self.tokenizer = RobertaTokenizer.from_pretrained(self.roberta_model_name)
+        self.vocab_size = self.tokenizer.vocab_size
         self.max_sentence_length = max_sentence_length
-        self._tokenize()
+        self._tokenize_all()
         self.data = data_object if data_object is not None else Flickr8K()
 
-    def _tokenize(self):
-        tokenizer = RobertaTokenizer.from_pretrained(self.roberta_model_name)
-        self.vocab_size = tokenizer.vocab_size
+    def _tokenize_all(self):
         for split in ["train", "test", "eval"]:
             values = getattr(self, split)
-            tokenized = tokenizer.batch_encode_plus(
+            setattr(self, "clean_"+split, values)
+            tokenized = self.tokenizer.batch_encode_plus(
                 values,
                 pad_to_max_length=True,
                 max_length=self.max_sentence_length,
@@ -127,6 +128,17 @@ class RoBERTaTokenizedFlickr8K(Flickr8K):
             )
             tokenized = tf.data.Dataset.from_tensor_slices(tokenized["input_ids"])
             setattr(self, split, tokenized)
+
+    def tokenize(self, data):
+        tokenized = self.tokenizer.batch_encode_plus(
+            data,
+            pad_to_max_length=True,
+            max_length=self.max_sentence_length,
+           values return_attention_masks=False,
+            return_tensors="tf"
+        )
+        tokenized = tf.data.Dataset.from_tensor_slices(tokenized["input_ids"])
+        return tokenized
 
     def save(self):
         with open(self.PICKLE_LOCATION, "wb") as f:
