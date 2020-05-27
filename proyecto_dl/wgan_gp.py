@@ -87,38 +87,30 @@ class WCGAN(Model):
                     [random_latent_vectors, text], 
                     training=True
                 )
-                print("fake images generated")
                 # Get the logits for the fake images
                 fake_logits = self.discriminator(
                     [fake_images, text], 
                     training=True
                 )
-                print("fake logits")
                 # Get the logits for real images
                 real_logits = self.discriminator(
                     [image, text], 
                     training=True
                 )
-                print("real logits")
 
                 # Calculate discriminator loss using fake and real logits
                 d_cost = self.d_loss_fn(real_img=real_logits, fake_img=fake_logits)
-                print("d_cost")
                 # Calculate the gradient penalty
                 gp = self.gradient_penalty(batch_size, image, fake_images, text)
-                print("gradient penalty")
                 # Add the gradient penalty to the original discriminator loss
                 d_loss = d_cost + gp * self.gp_weight
-                print("d_loss")
 
             # Get the gradients w.r.t the discriminator loss
             d_gradient = tape.gradient(d_loss, self.discriminator.trainable_variables)
-            print("d_gradient")
             # Update the weights of the discriminator using the discriminator optimizer
             self.d_optimizer.apply_gradients(
                 zip(d_gradient, self.discriminator.trainable_variables)
             )
-            print("apply")
 
         # Train the generator now.
         # Get the latent vector
@@ -129,25 +121,20 @@ class WCGAN(Model):
                 [random_latent_vectors, text],
                 training=True
             )
-            print("images generated")
             # Get the discriminator logits for fake images
             gen_img_logits = self.discriminator(
                 [generated_images, text],
                 training=True
             )
-            print("and discriminated")
             # Calculate the generator loss
             g_loss = self.g_loss_fn(gen_img_logits)
-            print("g_loss")
 
         # Get the gradients w.r.t the generator loss
         gen_gradient = tape.gradient(g_loss, self.generator.trainable_variables)
-        print("g_gradient")
         # Update the weights of the generator using the generator optimizer
         self.g_optimizer.apply_gradients(
             zip(gen_gradient, self.generator.trainable_variables)
         )
-        print("applied")
         return {"d_loss": d_loss, "g_loss": g_loss}
 
 class WCGANBuilder:
